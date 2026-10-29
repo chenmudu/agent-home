@@ -2,6 +2,8 @@
 
 个人 agent 配置的共享层。ZCode、Qoder、Claude 通过各自配置目录里的软链 / Junction 指回这里，改动在这里生效。
 
+英文版：[README.en.md](README.en.md)。指令与技能入口的英文副本：[AGENTS.en.md](AGENTS.en.md)、[SKILL.en.md](skills/product-research/SKILL.en.md)。
+
 ## 内容
 
 - `AGENTS.md`：全局指令。被 `~/.zcode/AGENTS.md`、`~/.qoder-cn/AGENTS.md`、`~/.claude/CLAUDE.md` 链接。
