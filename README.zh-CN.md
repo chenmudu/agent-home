@@ -26,4 +26,4 @@
 
 ## 敏感信息
 
-仓库保持私有。密钥、token、`.env`、`*.local.json` 不入库，见 `.gitignore`。
+仓库为公开仓库。密钥、token、`.env`、`*.local.json` 一律不入库，见 `.gitignore`。

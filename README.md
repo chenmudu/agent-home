@@ -26,7 +26,7 @@ Links are machine-local state; recreate them after moving machines. On Windows, 
 
 ## Sensitive information
 
-The repository stays private. Keys, tokens, `.env` files, and `*.local.json` are not committed; see `.gitignore`.
+The repository is public. Never commit keys, tokens, `.env` files, or `*.local.json`; see `.gitignore`.
 
 ## Language versions
 
