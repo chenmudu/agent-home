@@ -1,29 +1,36 @@
 # agent-home
 
-个人 agent 配置的共享层。ZCode、Qoder、Claude 通过各自配置目录里的软链 / Junction 指回这里，改动在这里生效。
+The shared layer for personal agent configuration. ZCode, Qoder, and Claude reach it through symlinks / junctions in their own config directories, so changes made here take effect everywhere.
 
-英文版：[README.en.md](README.en.md)。指令与技能入口的英文副本：[AGENTS.en.md](AGENTS.en.md)、[SKILL.en.md](skills/product-research/SKILL.en.md)。
+Chinese: [README.zh-CN.md](README.zh-CN.md)
 
-## 内容
+## Contents
 
-- `AGENTS.md`：全局指令。被 `~/.zcode/AGENTS.md`、`~/.qoder-cn/AGENTS.md`、`~/.claude/CLAUDE.md` 链接。
-- `skills/<name>/`：可移植技能包（`SKILL.md` + assets/references/scripts）。目前 `product-research` 被 `.zcode` 和 `.qoder-cn` 以 Junction 引用。
+- `AGENTS.md`: global instructions. Linked from `~/.zcode/AGENTS.md`, `~/.qoder-cn/AGENTS.md`, and `~/.claude/CLAUDE.md`.
+- `skills/<name>/`: portable skill packages (`SKILL.md` + assets/references/scripts). Currently `product-research` is referenced by `.zcode` and `.qoder-cn` via junctions.
 
-## 新增 skill 时
+## Adding a skill
 
-1. 放到 `skills/<name>/`，`SKILL.md` 的 `name` 必须等于目录名。
-2. 在需要的客户端目录里建 Junction：
+1. Put it under `skills/<name>/`; the `name` in `SKILL.md` frontmatter must equal the directory name.
+2. Create a junction in each client directory that should see it:
 
    ```
    mklink /J "%USERPROFILE%\.zcode\skills\<name>" "%USERPROFILE%\.agent\skills\<name>"
    ```
 
-3. 只放进某个客户端目录不会共享。
+3. Putting it only in one client directory does not share it.
 
-## 链接不在仓库里
+## Links are not in the repository
 
-链接是本机状态，换机后重建。Windows 上文件软链需要开发者模式或管理员权限，目录 Junction 不需要。
+Links are machine-local state; recreate them after moving machines. On Windows, file symlinks require Developer Mode or administrator rights; directory junctions do not.
 
-## 敏感信息
+## Sensitive information
 
-仓库保持私有。密钥、token、`.env`、`*.local.json` 不入库，见 `.gitignore`。
+The repository stays private. Keys, tokens, `.env` files, and `*.local.json` are not committed; see `.gitignore`.
+
+## Language versions
+
+- English: this file (default)
+- Chinese: [README.zh-CN.md](README.zh-CN.md)
+- Instructions: [AGENTS.md](AGENTS.md) / [AGENTS.en.md](AGENTS.en.md)
+- Skill entry: [SKILL.md](skills/product-research/SKILL.md) / [SKILL.en.md](skills/product-research/SKILL.en.md)
