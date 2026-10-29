@@ -1,0 +1,19 @@
+# secrets / local overrides
+.env
+.env.*
+*.local.json
+*.key
+*.pem
+id_rsa*
+credentials*
+
+# runtime and generated
+.research/
+*.log
+tmp/
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

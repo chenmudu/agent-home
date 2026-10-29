@@ -1,0 +1,117 @@
+/* product-research structure baseline @2
+   结构（版式 / 表格 / 折叠 / 编号）是固定的；
+   皮肤不是——变量值必须按被调研对象的 UI 重设，并在样式表顶部注明：
+     skin: <对象名> UI
+   本文件里的颜色只是未取色时的中性占位，不构成默认风格。 */
+
+:root{
+  --sk-zebra:#fbfbfa;
+  --sk-bg:#f6f7f6;
+  --sk-panel:#ffffff;
+  --sk-panel-2:#eef1ef;
+  --sk-ink:#15181b;
+  --sk-ink-2:#4a5259;
+  --sk-ink-3:#838b92;
+  --sk-line:#dfe3e2;
+  --sk-line-2:#c6ccca;
+  --sk-acc:#12625b;
+  --sk-acc-2:#8a4a22;
+  --sk-ok:#2c7247;
+  --sk-warn:#8f6410;
+  --sk-bad:#9c3030;
+  --sk-code:#eef1ef;
+  --sk-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --sk-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",Roboto,sans-serif;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--sk-bg);color:var(--sk-ink);font-family:var(--sk-sans);font-size:15px;line-height:1.78}
+
+.wrap{display:grid;grid-template-columns:216px minmax(0,1fr);max-width:1180px;margin:0 auto}
+nav{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:24px 14px 44px;border-right:1px solid var(--sk-line);background:var(--sk-panel)}
+nav .brand{font-weight:700;font-size:14px;letter-spacing:.01em;margin-bottom:4px}
+nav .sub{font-family:var(--sk-mono);font-size:11px;color:var(--sk-ink-3);margin-bottom:16px}
+nav a{display:block;padding:5px 8px;border-radius:5px;color:var(--sk-ink-2);text-decoration:none;font-size:13px;line-height:1.5}
+nav a:hover{background:var(--sk-panel-2);color:var(--sk-ink)}
+nav a .n{font-family:var(--sk-mono);font-size:11px;color:var(--sk-ink-3);margin-right:7px}
+nav .sep{margin:14px 0 6px;font-size:11px;color:var(--sk-ink-3);letter-spacing:.08em;text-transform:uppercase}
+
+main{padding:32px 44px 96px;min-width:0;max-width:900px}
+h1{font-size:26px;line-height:1.32;margin:0 0 14px;letter-spacing:-.01em}
+h2{font-size:19px;margin:46px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--sk-line);scroll-margin-top:16px}
+h2 .n{color:var(--sk-acc);font-family:var(--sk-mono);font-size:13px;margin-right:9px}
+h3{font-size:15.5px;margin:26px 0 8px;color:var(--sk-acc)}
+h4{font-size:14px;margin:18px 0 6px;color:var(--sk-ink)}
+p{margin:10px 0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+
+code{font-family:var(--sk-mono);font-size:12.5px;background:var(--sk-code);border:1px solid var(--sk-line);border-radius:4px;padding:1px 5px}
+pre{font-family:var(--sk-mono);font-size:12.5px;background:var(--sk-code);border:1px solid var(--sk-line);border-radius:8px;padding:14px 16px;overflow:auto;line-height:1.62}
+pre code{background:none;border:0;padding:0}
+a{color:var(--sk-acc)}
+
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+th,td{border:1px solid var(--sk-line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--sk-panel-2);color:var(--sk-ink-2);font-weight:600;font-size:12.5px;white-space:nowrap}
+tbody tr:nth-child(even){background:var(--sk-zebra)}
+
+/* 页首元信息：固定标签表 */
+table.meta{margin:0 0 22px;font-size:12.5px;background:var(--sk-panel)}
+table.meta th{width:96px;font-family:var(--sk-mono);font-weight:500;color:var(--sk-ink-3);background:var(--sk-panel-2)}
+table.meta td{font-family:var(--sk-mono)}
+table.meta td .k{color:var(--sk-ink)}
+
+/* 前置结论卡 */
+.verdict{background:var(--sk-panel);border:1px solid var(--sk-line);border-left:3px solid var(--sk-acc);border-radius:8px;padding:16px 18px;margin:0 0 18px}
+.verdict p{margin:6px 0}
+.verdict .one{font-size:16px;line-height:1.7}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
+.kpi{background:var(--sk-panel);border:1px solid var(--sk-line);border-radius:8px;padding:12px 14px}
+.verdict .kpis{margin:12px 0 8px}
+.verdict .kpi{background:var(--sk-bg);border-color:transparent}
+.kpi .v{font-family:var(--sk-mono);font-size:22px;color:var(--sk-acc);letter-spacing:-.02em}
+.kpi .l{font-size:12px;color:var(--sk-ink-3);line-height:1.5}
+
+/* 提示块 */
+.callout{border:1px solid var(--sk-line);border-left:3px solid var(--sk-ink-3);border-radius:6px;padding:12px 15px;margin:14px 0;background:var(--sk-panel)}
+.callout.note{border-left-color:var(--sk-acc)}
+.callout.warn{border-left-color:var(--sk-warn)}
+.callout.bad{border-left-color:var(--sk-bad)}
+.callout.ok{border-left-color:var(--sk-ok)}
+.callout .h{font-weight:600;font-size:13px;margin-bottom:4px}
+
+/* 证据标签 */
+.tag{display:inline-block;font-family:var(--sk-mono);font-size:11px;line-height:1.6;padding:0 6px;border:1px solid var(--sk-line-2);border-radius:4px;color:var(--sk-ink-2);background:var(--sk-panel);white-space:nowrap}
+.ok-mark{color:var(--sk-ok);font-weight:600}
+.warn-mark{color:var(--sk-warn);font-weight:600}
+.bad-mark{color:var(--sk-bad);font-weight:600}
+.dim{color:var(--sk-ink-3)}
+.small{font-size:12.5px}
+
+/* 本版变化（v2+） */
+.delta{background:var(--sk-panel);border:1px dashed var(--sk-line-2);border-radius:8px;padding:14px 16px;margin:0 0 18px}
+.delta .h{font-weight:600;color:var(--sk-acc-2);margin-bottom:6px;font-size:13.5px}
+
+/* 截图：默认折叠 */
+details.fig{border:1px solid var(--sk-line);border-radius:8px;background:var(--sk-panel);padding:0 14px;margin:14px 0}
+details.fig summary{cursor:pointer;padding:10px 0;font-size:13.5px;color:var(--sk-ink-2)}
+details.fig[open] summary{border-bottom:1px solid var(--sk-line)}
+details.fig figcaption{font-size:12.5px;color:var(--sk-ink-3);padding:8px 0 12px}
+details.fig img{display:block;margin:12px 0 4px;border-radius:6px}
+
+hr{border:0;border-top:1px solid var(--sk-line);margin:34px 0}
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--sk-line)}
+  main{padding:24px 20px 72px}
+  .kpis{grid-template-columns:1fr}
+}
+@media print{
+  nav{display:none}
+  .wrap{display:block}
+  main{max-width:none;padding:0}
+  details.fig{break-inside:avoid}
+  body{background:#fff}
+}
