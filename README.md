@@ -1,28 +1,29 @@
 # agent-home
 
-The shared layer for personal agent configuration. ZCode, Qoder, and Claude reach it through symlinks / junctions in their own config directories, so changes made here take effect everywhere.
+The shared layer for personal agent configuration. ZCode, Qoder, and Claude read it from each client's own config directory, so changes made here take effect everywhere.
 
 Chinese: [README.zh-CN.md](README.zh-CN.md)
 
 ## Contents
 
 - `AGENTS.md`: global instructions. Linked from `~/.zcode/AGENTS.md`, `~/.qoder-cn/AGENTS.md`, and `~/.claude/CLAUDE.md`.
-- `skills/<name>/`: portable skill packages (`SKILL.md` + assets/references/scripts). Currently `product-research` is referenced by `.zcode` and `.qoder-cn` via junctions.
+- `skills/<name>/`: portable skill packages (`SKILL.md` + assets/references/scripts), read by the client directories that need them.
+
+| Skill | What it is | Source / licence | Use when | Changed here, and why |
+| --- | --- | --- | --- | --- |
+| `cc-design-taste-frontend` | Builds a page from zero: deals a direction, writes the copy deck, type, palette, imagery, verifies in a real browser | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) / MIT | No working interface yet | Trigger description narrowed to new builds; the "existing page" section now hands off to `cc-unslop`. Both skills fired on the same words, so the pick was random |
+| `cc-product-research` | Product / repo research report | own | Research, comparison, claimed-vs-actual | None | — |
+| `cc-unslop` | Repairs an existing screen: audits the AI tells, fixes in nine passes | [heydamir/unslop](https://github.com/heydamir/unslop) / CC BY 4.0 | Interface already runs (source, live URL or screenshot) | Narrowed the same way, plus a "modified locally" note and a boundary paragraph (CC BY asks for changes to be indicated). Same reason |
+
+Every skill here keeps `SKILL.md` in Chinese — that is the file a client loads — and the English copy beside it as `SKILL.en.md`.
+
+The gate between `cc-design-taste-frontend` and `cc-unslop` is one question: does a working interface exist? Page type and brand status do not decide it — both skills cover both.
 
 ## Adding a skill
 
 1. Put it under `skills/<name>/`; the `name` in `SKILL.md` frontmatter must equal the directory name.
-2. Create a junction in each client directory that should see it:
-
-   ```
-   mklink /J "%USERPROFILE%\.zcode\skills\<name>" "%USERPROFILE%\.agent\skills\<name>"
-   ```
-
-3. Putting it only in one client directory does not share it.
-
-## Links are not in the repository
-
-Links are machine-local state; recreate them after moving machines. On Windows, file symlinks require Developer Mode or administrator rights; directory junctions do not.
+2. Make it reachable from each client's skills directory (`~/.zcode/skills`, `~/.qoder-cn/skills`, ...).
+3. One client directory alone does not share it.
 
 ## Sensitive information
 
@@ -33,4 +34,4 @@ The repository is public. Never commit keys, tokens, `.env` files, or `*.local.j
 - English: this file (default)
 - Chinese: [README.zh-CN.md](README.zh-CN.md)
 - Instructions: [AGENTS.md](AGENTS.md) / [AGENTS.en.md](AGENTS.en.md)
-- Skill entry: [SKILL.md](skills/product-research/SKILL.md) / [SKILL.en.md](skills/product-research/SKILL.en.md)
+- Skill entry: [SKILL.md](skills/cc-product-research/SKILL.md) / [SKILL.en.md](skills/cc-product-research/SKILL.en.md)

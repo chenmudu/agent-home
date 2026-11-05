@@ -1,28 +1,29 @@
 # agent-home
 
-个人 agent 配置的共享层。ZCode、Qoder、Claude 通过各自配置目录里的软链 / Junction 指回这里，改动在这里生效。
+个人 agent 配置的共享层。ZCode、Qoder、Claude 从各自配置目录读取这里的内容，改动在这里生效。
 
-英文版（默认）：[README.md](README.md)。指令与技能入口的英文副本：[AGENTS.en.md](AGENTS.en.md)、[SKILL.en.md](skills/product-research/SKILL.en.md)。
+英文版（默认）：[README.md](README.md)。指令与技能入口的英文副本：[AGENTS.en.md](AGENTS.en.md)、[SKILL.en.md](skills/cc-product-research/SKILL.en.md)。
 
 ## 内容
 
 - `AGENTS.md`：全局指令。被 `~/.zcode/AGENTS.md`、`~/.qoder-cn/AGENTS.md`、`~/.claude/CLAUDE.md` 链接。
-- `skills/<name>/`：可移植技能包（`SKILL.md` + assets/references/scripts）。目前 `product-research` 被 `.zcode` 和 `.qoder-cn` 以 Junction 引用。
+- `skills/<name>/`：可移植技能包（`SKILL.md` + assets/references/scripts），由需要的客户端目录读取。
+
+| Skill | 是什么 | 来源 / 许可 | 用在什么场景 | 本仓库改了什么·为什么 |
+| --- | --- | --- | --- | --- |
+| `cc-design-taste-frontend` | 从零建页面：抽方向、写文案、排字体配色、找图，真浏览器验收 | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) / MIT | 页面/界面还不存在 | 触发词收窄到"从零建"；「已有页面」那节改成转交 `cc-unslop`。两个技能命中同一批词，选中全凭随机 |
+| `cc-product-research` | 产品 / 仓库调研报告 | 自有 | 调研、选型、宣称与实现自查 | 未改 | — |
+| `cc-unslop` | 修已有界面：审计 AI 味，按 9 层逐遍改 | [heydamir/unslop](https://github.com/heydamir/unslop) / CC BY 4.0 | 界面已经能跑（源码、线上链接或截图） | 同样反向收窄，另加"modified locally"说明和边界段（CC BY 要求标注改动）。原因同上 |
+
+每个技能的 `SKILL.md` 都是中文（客户端实际加载的就是它），旁边保留英文副本 `SKILL.en.md`。
+
+`cc-design-taste-frontend` 和 `cc-unslop` 的分界线只有一个问题：现在有没有能跑的界面。页面类型和品牌状态不参与判定，两者都覆盖。
 
 ## 新增 skill 时
 
 1. 放到 `skills/<name>/`，`SKILL.md` 的 `name` 必须等于目录名。
-2. 在需要的客户端目录里建 Junction：
-
-   ```
-   mklink /J "%USERPROFILE%\.zcode\skills\<name>" "%USERPROFILE%\.agent\skills\<name>"
-   ```
-
+2. 让需要的客户端技能目录（`~/.zcode/skills`、`~/.qoder-cn/skills` 等）能读到它。
 3. 只放进某个客户端目录不会共享。
-
-## 链接不在仓库里
-
-链接是本机状态，换机后重建。Windows 上文件软链需要开发者模式或管理员权限，目录 Junction 不需要。
 
 ## 敏感信息
 

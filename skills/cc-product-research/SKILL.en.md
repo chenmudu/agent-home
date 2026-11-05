@@ -1,6 +1,13 @@
 ---
-name: product-research
-description: Research any product, repository, or approach and produce a traceable report: first use it as a real user (click, screenshot, walk the main paths), then go into the code to explain the mechanism and boundaries, and answer with both a product lens and a developer lens: "what can it do, how does it do it, and is it worth using / copying / switching / merging?" Use for requests like "research X", "what can this product do", "how is this implemented", "which of these should I choose / can they be merged", or "is this idea worth copying"; also for auditing your own product's feature claims (claimed vs. visible vs. implemented).
+name: cc-product-research
+description: >-
+  Research any product, repository, or approach and produce a traceable report: first use it as a real
+  user (click, screenshot, walk the main paths), then go into the code to explain the mechanism and
+  boundaries, and answer with both a product lens and a developer lens: "what can it do, how does it do
+  it, and is it worth using / copying / switching / merging?" Use for requests like "research X", "what
+  can this product do", "how is this implemented", "which of these should I choose / can they be
+  merged", or "is this idea worth copying"; also for auditing your own product's feature claims
+  (claimed vs. visible vs. implemented).
 ---
 
 > English translation of `SKILL.md`. The Chinese `SKILL.md` is the operative file; method details in `references/`, `assets/`, and the report scripts remain in Chinese.
@@ -14,7 +21,7 @@ Turn a research task into a **traceable evidence chain**, not a feature list: us
 ## Shortest usage
 
 ```
-/product-research <code path or repo URL> [product URL]
+/cc-product-research <code path or repo URL> [product URL]
 ```
 
 Nothing else is required. These are the defaults:
