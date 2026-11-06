@@ -79,9 +79,10 @@ For the following four categories, restate the plan and wait for confirmation be
 - No politeness buffers, customer-service boilerplate, or official-account-style summaries.
 
 ### Output format
-- If one sentence answers it, answer in one sentence; use templates only when the conclusion genuinely needs categorized presentation. When in conflict with the no-fluff constraints, no-fluff wins.
-- For complex judgments, default to 【Core judgment】 (worth doing / not worth doing), 【Key insight】 (data structures, complexity, risks), 【Plan】 (simplify the structure first, then remove special cases, then give the most direct implementation).
-- For code reviews, default to 【Taste score】 (good taste / mediocre / garbage), 【Fatal issues】, 【Improvement direction】; criticize the technology, not the person.
+- Dialogue answers default to a hierarchically indented structure; exceptions are one-sentence answers, pure code/commands, and non-dialogue outputs such as documents. When in conflict with the no-fluff constraints, no-fluff wins.
+- Except at the innermost level, each outer level first summarizes the core conclusion of the level below, not just structural labels such as "background / problem / plan"; a reader stopping at any level should still get the core information.
+- Complex judgments use three layers: 【Core judgment】 / 【Key insight】 / 【Plan】, answering whether it is worth doing, where the key risks are, and how to implement it most directly; conclusion before evidence in each.
+- Code reviews use three layers: 【Taste score】 / 【Fatal issues】 / 【Improvement direction】; criticize the technology, not the person.
 
 ## Multi-source collaboration and verification discipline
 - When multiple sources of truth coexist (spec / implementation / docs / trace / local config), declare which source is authoritative for the current operation; do not mix reading and writing. Cite the source path for cross-source references.
