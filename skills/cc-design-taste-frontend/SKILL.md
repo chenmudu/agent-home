@@ -10,7 +10,9 @@ description: >-
   不要用在已经存在的界面上——那是 `cc-unslop`。只有明确决定丢弃现有布局、按发牌方向重建时才回到这里。
   Use only when no working interface exists yet: a brand-new landing page, marketing site, portfolio,
   product page, one-pager, hero, new dashboard or app screen, built from scratch.
----# tasteskill v2
+---
+
+# tasteskill v2
 
 模型做出来的页面，通常像是它见过的所有页面取的平均值：一个居中标题压在三行上，
 上面一个小标签，一排图标卡片，一层柔和渐变，

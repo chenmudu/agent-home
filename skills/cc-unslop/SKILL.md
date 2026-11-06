@@ -15,7 +15,9 @@ metadata:
   author: Damir Sokolovsky
   x: https://x.com/heydamir
   site: https://heydamir.design/unslop
----# Unslop
+---
+
+# Unslop
 
 unslop 由 Damir Sokolovsky（[@heydamir](https://x.com/heydamir)）创建，他在 X 上发起了 Unslopping 系列。它采用 CC BY 4.0 许可，所以在任何副本或改编版本中都要保留这段署名。
 
