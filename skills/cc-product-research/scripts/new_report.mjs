@@ -5,6 +5,7 @@
  *   node new_report.mjs --slug context-lens --title "Context Lens" \
  *     [--repo owner/repo] [--version v0.8.0] [--commit ce17b9d] [--commit-date 2026-10-21] \
  *     [--local <path>] [--level A] [--modes 实机操作,源码] [--date 2026-10-29] \
+ *     [--reader evaluator|operator|maintainer] \
  *     [--previous <file>] [--root <workspace>] [--out <file>]
  *
  * Writes <root>/.research/<slug>/<YYYY-MM-DD>-v<N>.html and maintains
@@ -13,6 +14,9 @@
  * N is derived from prior reports that carry a report-meta block with the same
  * slug. Existing files are never overwritten: a re-run on the same day creates
  * v2, v3, ...
+ *
+ * The scaffold is contractVersion 3: one-screen brief + five acts + three
+ * evidence appendices. Fill it; do not hand-copy the theme.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs'
 import { basename, dirname, join, relative, resolve, sep } from 'node:path'
@@ -22,6 +26,8 @@ const SKILL_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const THEME = readFileSync(join(SKILL_DIR, 'assets', 'report-theme.css'), 'utf8')
 const META_SCHEMA = 'product-research/report@1'
 const INDEX_SCHEMA = 'product-research/index@1'
+const READER_MODES = ['evaluator', 'operator', 'maintainer']
+const CONTRACT_VERSION = 3
 
 const args = process.argv.slice(2)
 const opt = (name, fallback) => {
@@ -32,7 +38,13 @@ const flag = (name) => args.includes(`--${name}`)
 
 const slug = opt('slug')
 if (!slug || !/^[a-z0-9][a-z0-9-]*$/.test(slug)) {
-  console.log('usage: node new_report.mjs --slug <kebab-case> --title "<name>" [--repo owner/repo] [--version vX] [--commit sha] [--commit-date YYYY-MM-DD] [--local <path>] [--level A|B|C|D|E] [--modes a,b] [--date YYYY-MM-DD] [--previous <file>] [--skin "<object> UI"] [--root <dir>] [--out <file>]')
+  console.log('usage: node new_report.mjs --slug <kebab-case> --title "<name>" [--repo owner/repo] [--version vX] [--commit sha] [--commit-date YYYY-MM-DD] [--local <path>] [--level A|B|C|D|E] [--modes a,b] [--date YYYY-MM-DD] [--reader evaluator|operator|maintainer] [--previous <file>] [--skin "<object> UI"] [--root <dir>] [--out <file>]')
+  process.exit(2)
+}
+
+const reader = opt('reader', 'evaluator')
+if (!READER_MODES.includes(reader)) {
+  console.error(`--reader must be one of ${READER_MODES.join(' | ')}, got "${reader}"`)
   process.exit(2)
 }
 
@@ -128,6 +140,8 @@ const meta = {
     version,
     level,
     modes,
+    contractVersion: CONTRACT_VERSION,
+    reader,
     accessSurfaces: [],
     degraded: [],
     decision: 'pending',
@@ -173,18 +187,19 @@ const deltaBlock = version >= 2
   : ''
 
 const nav = [
-  ['s1', '产品画像'],
-  ['s2', '范围与自证'],
-  ['s3', '宣称 / 可见 / 实现'],
-  ['s4', '功能地图'],
-  ['s5', '主旅程实测'],
-  ['s6', '功能确认'],
-  ['s7', '机制与边界'],
-  ['s8', '未验证区'],
-  ['s9', '待拍板'],
-  ['appendix', '附录'],
+  ['brief', '决策简报', '—'],
+  ['a1', '进入', '01'],
+  ['a2', '安装后', '02'],
+  ['a3', '核心链路', '03'],
+  ['a4', '承载者', '04'],
+  ['a5', '横切', '05'],
+  ['appendix-evidence', '证据附录', '附'],
+  ['appendix-selfproof', '自证附录', '附'],
+  ['appendix-refs', '参考附录', '附'],
 ]
-const navHtml = nav.map(([id, label], i) => `<a href="#${id}"><span class="n">${i < 9 ? `0${i + 1}` : '附'}</span>${esc(label)}</a>`).join('\n')
+const navHtml = nav
+  .map(([id, label, n], i) => `${i === 1 ? '<div class="sep">五幕</div>\n' : ''}${i === 6 ? '<div class="sep">附录</div>\n' : ''}<a href="#${id}"><span class="n">${n}</span>${esc(label)}</a>`)
+  .join('\n')
 
 const objectLine = esc(repo || localPath || title)
 
@@ -204,8 +219,7 @@ ${THEME.trim()}
 <nav>
 <div class="brand">${esc(title)}</div>
 <div class="sub">${esc(slug)} · v${version} · ${date}</div>
-<a href="#top"><span class="n">—</span>元信息与结论</a>
-<div class="sep">正文</div>
+<a href="#top"><span class="n">—</span>元信息</a>
 ${navHtml}
 </nav>
 <main id="top">
@@ -220,130 +234,201 @@ ${navHtml}
 <tr><th>调研方式</th><td>${esc(modes.length ? modes.join(' + ') : '—')}</td></tr>
 <tr><th>调研日期</th><td>${date}</td></tr>
 </table>
-${deltaBlock}
-<div class="verdict">
-<p class="one"><strong>一句话：</strong><!-- TODO: 它是什么，用一句大白话 --></p>
+
+<section id="brief" class="verdict brief">
+<h2 class="brief-h">决策简报</h2>
+<p class="one"><strong>一句话：</strong><!-- TODO: 它是什么，用一句大白话，≤120 字，不含路径 / 函数名 / 机制名 --></p>
+<div class="brief-grid">
+<div class="brief-row"><div class="k">给谁用</div><div class="c" data-k="who"><!-- TODO: 谁在什么场景用；谁不该用 --></div></div>
+<div class="brief-row"><div class="k">怎么用</div><div class="c" data-k="how"><!-- TODO: 最短路径；不贴代码块 --></div></div>
+<div class="brief-row"><div class="k">代价</div><div class="c" data-k="cost"><!-- TODO: 钱 / 时间 / 风险 / 不可逆动作 --></div></div>
+<div class="brief-row"><div class="k">本次没做到</div><div class="c" data-k="notdone"><!-- TODO: 未实机 / 未验证 / 没权限；没有就写"无" --></div></div>
+<div class="brief-row"><div class="k">该不该试</div><div class="c" data-k="try"><!-- TODO: 采纳 / 试用 / 观察 / 放弃 + 一句理由 --></div></div>
+<div class="brief-row"><div class="k">下一步</div><div class="c" data-k="next"><!-- TODO: 一个可执行动作 --></div></div>
+</div>
 <div class="kpis">
-<div class="kpi"><div class="v"><!-- TODO --></div><div class="l"><!-- 口径 --></div></div>
-<div class="kpi"><div class="v"><!-- TODO --></div><div class="l"><!-- 口径 --></div></div>
-<div class="kpi"><div class="v"><!-- TODO --></div><div class="l"><!-- 口径 --></div></div>
+<div class="kpi"><div class="v"><!-- TODO --></div><div class="l"><!-- TODO: 数字指什么 + 统计范围，例如 15 个顶层命令 · 50 个可执行叶子命令 --></div></div>
+<div class="kpi"><div class="v"><!-- TODO --></div><div class="l"><!-- TODO: 数字指什么 + 统计范围 --></div></div>
+<div class="kpi"><div class="v"><!-- TODO --></div><div class="l"><!-- TODO: 数字指什么 + 统计范围 --></div></div>
 </div>
-<p><strong>适合谁：</strong><!-- TODO --></p>
-<p><strong>不适合谁：</strong><!-- TODO --></p>
+</section>
+
+<!-- 术语表（可选，≤5 行；同一行话出现 ≥2 次或影响判断时才启用）
+<div class="glossary">
+<h3>术语</h3>
+<dl>
+<dt>术语</dt><dd>一句人话 + 为什么影响判断</dd>
+</dl>
 </div>
+-->
 
-<section>
-<h2 id="s1"><span class="n">01</span>产品画像</h2>
-<h3>1.1 定位：它是什么，不是什么</h3>
-<p><!-- TODO: 一句话 + 替代谁 / 被谁替代 --></p>
-
-<h3>1.2 目标：它想解决谁的什么问题</h3>
-<p><!-- TODO: README / release note 原话 + 目标是否漂移 --></p>
-
-<h3>1.3 现状：版本、活跃度、维护状态</h3>
-<p><!-- TODO: 可核实的数字，带口径与日期 --></p>
-
-<h3>1.4 问题：用户实际遇到什么</h3>
-<p><!-- TODO: issue / 报错 / 自己卡住的地方；与"它想解决的问题"分开写 --></p>
-
-<h3>1.5 解决方法：核心机制与关键取舍</h3>
-<p><!-- TODO: 一句话机制 + 为什么这样解 + 付出了什么代价 --></p>
-<p class="dim">功能细节不在这里写，下沉到第 6 段：一个功能一块「产品意图 → 代码确认 → 判定」。</p>
-</section>
-
-<section>
-<h2 id="s2"><span class="n">02</span>范围、边界与自证</h2>
-<h3>访问面与驱动</h3>
-<table>
-<thead><tr><th>形态</th><th>驱动</th><th>探针结果</th><th>备注</th></tr></thead>
-<tbody><tr><td><!-- TODO --></td><td></td><td></td><td></td></tr></tbody>
-</table>
-<h3>降级声明</h3>
-<p><!-- TODO: 哪些能力只来自源码 / 文档 --></p>
-<h3>需求回归</h3>
-<table>
-<thead><tr><th>#</th><th>用户原话（摘）</th><th>转成的验收项</th><th>落在哪里</th><th>状态</th></tr></thead>
-<tbody><tr><td>1</td><td><!-- TODO --></td><td></td><td></td><td>✅ / ⏳ / ❌</td></tr></tbody>
-</table>
-<h3>非变更自证</h3>
-<pre><code>操作区间：<开始> → <结束>
-写操作：0 次
-外部调用：<哪些操作花了钱 / 额度>
-被改动文件：<路径 + mtime>（没有就写"无"）
-自证：<关键计数> 开始 = 结束</code></pre>
-</section>
-
-<section>
-<h2 id="s3"><span class="n">03</span>宣称 / 可见 / 实现</h2>
-<table>
-<thead><tr><th>宣称</th><th>可见</th><th>实现</th><th>差集解释</th></tr></thead>
-<tbody><tr><td><!-- TODO --></td><td></td><td></td><td></td></tr></tbody>
+<section id="a1" data-act="entry">
+<h2><span class="n">01</span>进入：第一次怎么跑起来</h2>
+<p class="act-q">这一幕回答：第一次怎么跑起来，停在哪算成功。</p>
+<p><!-- TODO: 最短路径 + 状态交接（S0 → S1） --></p>
+<table data-table="first-run">
+<thead><tr><th>宿主/平台</th><th>前置条件</th><th>安装/接入</th><th>第一条命令/动作</th><th>第一个可见结果</th><th>卡点</th></tr></thead>
+<tbody><tr><td><!-- TODO --></td><td></td><td></td><td></td><td></td><td></td></tr></tbody>
 </table>
 </section>
 
-<section>
-<h2 id="s4"><span class="n">04</span>功能地图</h2>
-<h3>入口清单</h3>
-<p><!-- TODO: 入口 / 屏幕 / 状态 / 动作 / 权限 五张清单 --></p>
-<h3>功能索引</h3>
-<p>表里只写入口与状态，结论在第 6 段。一个功能一行，末列链到对应的功能块。</p>
-<table>
-<thead><tr><th>功能</th><th>入口</th><th>用户得到什么</th><th>状态</th><th>详情</th></tr></thead>
+<section id="a2" data-act="delta">
+<h2><span class="n">02</span>安装后：环境多了什么</h2>
+<p class="act-q">这一幕回答：装完多了什么、变了什么、怎么退。</p>
+<p>先写好影响，再写代价。状态交接：S1 → S1'。</p>
+<table data-table="delta">
+<thead><tr><th>宿主/平台</th><th>新增资产</th><th>被激活的能力</th><th>好影响</th><th>代价/坏影响</th><th>没变的东西</th><th>回滚</th></tr></thead>
+<tbody><tr><td><!-- TODO --></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody>
+</table>
+</section>
+
+<section id="a3" data-act="flow">
+<h2><span class="n">03</span>核心链路：数据从哪来、经过哪些状态、变成什么</h2>
+<p class="act-q">这一幕回答：主链路是否闭合，输出能不能验证。</p>
+
+<h3 id="a3-input">输入</h3>
+<table data-table="input">
+<thead><tr><th>输入</th><th>来源/路径</th><th>最小单位</th><th>读什么</th><th>不读什么</th><th>权限/隐私</th></tr></thead>
+<tbody><tr><td><!-- TODO --></td><td></td><td></td><td></td><td></td><td></td></tr></tbody>
+</table>
+<p>状态交接：S1 → S2。</p>
+
+<h3 id="a3-process">处理（状态表）</h3>
+<table data-flow="state">
+<thead><tr><th>#</th><th>输入状态</th><th>执行者</th><th>处理</th><th>输出状态</th><th>失败/降级</th><th>证据</th></tr></thead>
 <tbody>
-<tr><td><!-- TODO --></td><td></td><td></td><td>✅ / ⏳ / ❌</td><td><a href="#fn-1">→ fn-1</a></td></tr>
+<tr data-state="S1"><td>1</td><td>S1</td><td><!-- TODO --></td><td></td><td>S2</td><td></td><td></td></tr>
+<tr data-state="S2"><td>2</td><td>S2</td><td><!-- TODO --></td><td></td><td>S3</td><td></td><td></td></tr>
+<tr data-state="S3"><td>3</td><td>S3</td><td><!-- TODO --></td><td></td><td>S4</td><td></td><td></td></tr>
 </tbody>
 </table>
-</section>
+<p>状态交接：S2 → S3 → S4。主链路超过 8 跳时合并中间跳，并在正文说明合并了什么。</p>
 
-<section>
-<h2 id="s5"><span class="n">05</span>主旅程实测</h2>
-<p><!-- TODO: J1..Jn：目标 → 操作 → 看到 → 卡在哪 --></p>
-</section>
-
-<section>
-<h2 id="s6"><span class="n">06</span>功能确认</h2>
-<p>一个功能一块，块数 = 第 4 段索引表的行数。三段顺序不许改。</p>
-
+<h3>功能档案</h3>
+<p>一个功能一块，固定三段；复制到 ≥6 块。功能索引里的每一行都要在这里有一块。</p>
 <div class="fn" id="fn-1">
-<h3>fn-1 · <!-- 功能名（用户语言） --></h3>
+<h4>fn-1 · <!-- 功能名（用户语言） --></h4>
 <p><strong>产品意图</strong>　<!-- TODO: 它想让用户得到什么；用户在这里会假设什么；这个设计的取舍。禁止出现代码名词。 --></p>
 <p><strong>代码确认</strong>　<!-- TODO: 路径:行号 —— 数据从哪来、谁算出这个数、关键常量是多少。边界：拿不到数据时怎么显示；失败时静默还是报错。 --></p>
 <p><strong>判定</strong>　<!-- TODO: 属实 / 打折扣 / 只是表面 + 一句为什么，指出确认到了哪一行。 --></p>
 <p class="dim">证据：<!-- TODO: 图号 / 命令 / 数字 --></p>
 </div>
 
-<h3>自我反驳</h3>
-<pre><code>先以为 <A>。更正：<B>。证据：<路径:行号 / 截图 / 实测></code></pre>
+<h3 id="a3-output">输出</h3>
+<table data-table="output">
+<thead><tr><th>产物</th><th>位置/格式</th><th>怎么确认是真的</th><th>状态语义</th><th>误判风险</th></tr></thead>
+<tbody><tr><td><!-- TODO --></td><td></td><td></td><td></td><td></td></tr></tbody>
+</table>
+<p>状态交接：S4 → Sn。</p>
 </section>
 
-<section>
-<h2 id="s7"><span class="n">07</span>机制、边界与失效</h2>
-<p><!-- TODO: 数据流 · 关键常量 · 静默降级清单 · 维护成本 --></p>
+<section id="a4" data-act="carrier">
+<h2><span class="n">04</span>承载者：谁维持流程和状态</h2>
+<p class="act-q">这一幕回答：每个阶段都有 owner、state store、failure path。</p>
+<table data-table="carrier">
+<thead><tr><th>阶段</th><th>承载者</th><th>状态存放</th><th>谁能读/写</th><th>中断/恢复</th><th>清理</th></tr></thead>
+<tbody>
+<tr><td>S1</td><td><!-- TODO --></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>S2</td><td><!-- TODO --></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>S3</td><td><!-- TODO --></td><td></td><td></td><td></td><td></td></tr>
+</tbody>
+</table>
 </section>
 
-<section>
-<h2 id="s8"><span class="n">08</span>未验证区</h2>
-<table>
+<section id="a5" data-act="crosscuts">
+<h2><span class="n">05</span>横切：主链路没讲清但影响判断的点</h2>
+<p class="act-q">这一幕只留会改变判断的点。</p>
+
+<h3>5.1 会话/数据范围与采样</h3>
+<p><!-- TODO: 覆盖了哪些会话 / 数据；采样多少；哪些没覆盖 --></p>
+
+<h3>5.2 使用模式</h3>
+<p><!-- TODO: 单人 / 团队 / 自动化；只读 / 写入 --></p>
+
+<h3>5.3 影响面</h3>
+<table data-table="impact">
+<thead><tr><th>对象</th><th>影响</th><th>证据</th></tr></thead>
+<tbody>
+<tr data-impact="human"><td>人</td><td><!-- TODO --></td><td></td></tr>
+<tr data-impact="host"><td>宿主</td><td><!-- TODO --></td><td></td></tr>
+<tr data-impact="object"><td>对象</td><td><!-- TODO --></td><td></td></tr>
+<tr data-impact="artifact"><td>产物</td><td><!-- TODO --></td><td></td></tr>
+</tbody>
+</table>
+
+<h3>5.4 成本与维护</h3>
+<p><!-- TODO: 钱 / 时间 / 依赖 / 维护成本 --></p>
+
+<h3>5.5 未验证与待拍板</h3>
+<table data-table="unverified">
 <thead><tr><th>缺什么</th><th>为什么没验</th><th>错了会怎样</th></tr></thead>
 <tbody><tr><td><!-- TODO --></td><td></td><td></td></tr></tbody>
 </table>
 </section>
 
-<section>
-<h2 id="s9"><span class="n">09</span>待拍板</h2>
-<p><!-- TODO: 交给用户的判断，每条给默认建议 --></p>
+<section id="appendix-evidence">
+<h2><span class="n">附</span>证据附录</h2>
+<h3>宣称 / 可见 / 实现</h3>
+<table>
+<thead><tr><th>宣称</th><th>可见</th><th>实现</th><th>差集解释</th></tr></thead>
+<tbody><tr><td><!-- TODO --></td><td></td><td><!-- TODO: 路径:行号 或 "无实现" --></td><td></td></tr></tbody>
+</table>
+
+<h3>功能索引</h3>
+<p>一行一个功能，只做索引，不写结论；末列链到 #fn-N。</p>
+<table>
+<thead><tr><th>功能</th><th>入口</th><th>详情</th></tr></thead>
+<tbody><tr><td><!-- TODO --></td><td></td><td><a href="#fn-1">→ fn-1</a></td></tr></tbody>
+</table>
+
+<h3>自我反驳</h3>
+<ol>
+<li>先以为 &lt;A&gt;。更正：&lt;B&gt;。证据：&lt;路径:行号 / 截图 / 实测&gt;</li>
+<li>先以为 &lt;A&gt;。更正：&lt;B&gt;。证据：&lt;路径:行号 / 截图 / 实测&gt;</li>
+<li>先以为 &lt;A&gt;。更正：&lt;B&gt;。证据：&lt;路径:行号 / 截图 / 实测&gt;</li>
+</ol>
 </section>
 
-<section id="appendix">
-<h2><span class="n">附</span>附录</h2>
-<h3>A 截图索引</h3>
+<section id="appendix-selfproof">
+<h2><span class="n">附</span>自证附录</h2>
+<h3>访问面与驱动</h3>
 <table>
-<thead><tr><th>图号</th><th>内容</th><th>所在段</th></tr></thead>
+<thead><tr><th>形态</th><th>驱动</th><th>探针结果</th><th>备注</th></tr></thead>
+<tbody><tr><td><!-- TODO --></td><td></td><td></td><td></td></tr></tbody>
+</table>
+
+<h3>需求回归</h3>
+<table>
+<thead><tr><th>#</th><th>用户原话（摘）</th><th>转成的验收项</th><th>落在哪里</th><th>状态</th></tr></thead>
+<tbody><tr><td>1</td><td><!-- TODO --></td><td></td><td></td><td>✅ / ⏳ / ❌</td></tr></tbody>
+</table>
+
+<h3>读者验收</h3>
+<p><!-- TODO: 交付前由独立 reader 完成三段验收，正文填入：[读者验收] 第一屏 Q1 → A1 … Q7 → A7；主线 M1 → A1 … M5 → A5；证据 F1 → A1 … F3 → A3；未解释词：&lt;词 or 无&gt; --></p>
+
+<h3>非变更自证</h3>
+<pre><code>操作区间：&lt;开始&gt; → &lt;结束&gt;
+写操作：0 次
+外部调用：&lt;哪些操作花了钱 / 额度&gt;
+被改动文件：&lt;路径 + mtime&gt;（没有就写"无"）
+自证：&lt;关键计数&gt; 开始 = 结束</code></pre>
+
+<h3>本版变化</h3>
+${version >= 2 ? deltaBlock : '<p>首次调研，无上一版。</p>'}
+</section>
+
+<section id="appendix-refs">
+<h2><span class="n">附</span>参考附录</h2>
+<h3>截图索引</h3>
+<table>
+<thead><tr><th>图号</th><th>内容</th><th>所在幕</th></tr></thead>
 <tbody><tr><td>—</td><td>—</td><td>—</td></tr></tbody>
 </table>
-<h3>B 源码引用</h3>
+
+<h3>源码引用</h3>
 <pre><code>&lt;路径:行号&gt; —— &lt;它证明了什么&gt;</code></pre>
-<h3>C 复现命令</h3>
+
+<h3>复现命令</h3>
 <pre><code>&lt;命令&gt;</code></pre>
 </section>
 
@@ -382,6 +467,8 @@ index.reports.push({
   objectVersion: objVersion,
   commit,
   title,
+  contractVersion: CONTRACT_VERSION,
+  reader,
   generatedAt: new Date().toISOString(),
   decision: 'pending',
 })
@@ -391,6 +478,7 @@ writeFileSync(indexPath, JSON.stringify(index, null, 2) + '\n', 'utf8')
 // --- report ------------------------------------------------------------------
 console.log(outPath)
 console.log(`version  v${version}  (${version === 1 ? '第一次调研' : `第 ${version} 次调研，上一版 ${previous?.meta?.research?.date ?? basename(previous.file)}`})`)
+console.log(`reader   ${reader}`)
 if (previous?.meta?.research?.date) {
   console.log(`previous ${relative(root, previous.file).replace(/\\/g, '/')}`)
   console.log('         → 必须填 "本版变化" 块和 meta.previous，不能静默重写')
@@ -402,4 +490,8 @@ if (strays.length) {
   console.log('         若其中有同一对象的旧报告，用 --previous <file> 重跑以继承版本号')
 }
 console.log(`index    ${relative(root, indexPath).replace(/\\/g, '/')}`)
-console.log('next     fill sections → node scripts/check_doc.mjs ' + relative(root, outPath).replace(/\\/g, '/'))
+console.log('brief    7 行：一句话 / 给谁用 / 怎么用 / 代价 / 本次没做到 / 该不该试 / 下一步；3 个 KPI，标签写清数字含义 + 统计范围')
+console.log('glossary 可选 ≤5 行：同一行话出现 ≥2 次或影响判断时才启用，放在 brief 之后')
+console.log('acts     a1 进入 → a2 安装后 → a3 核心链路 → a4 承载者 → a5 横切；五幕是状态链，不是五个章节')
+console.log('state    状态表 ≥3 行：输入状态 / 执行者 / 处理 / 输出状态 / 失败/降级 / 证据；功能挂在状态节点上')
+console.log('next     fill → node scripts/check_doc.mjs ' + relative(root, outPath).replace(/\\/g, '/'))

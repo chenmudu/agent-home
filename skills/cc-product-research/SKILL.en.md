@@ -1,22 +1,22 @@
 ---
 name: cc-product-research
 description: >-
-  Research any product, repository, or approach and produce a traceable report: first use it as a real
-  user (click, screenshot, walk the main paths), then go into the code to explain the mechanism and
-  boundaries, and answer with both a product lens and a developer lens: "what can it do, how does it do
-  it, and is it worth using / copying / switching / merging?" Use for requests like "research X", "what
-  can this product do", "how is this implemented", "which of these should I choose / can they be
-  merged", or "is this idea worth copying"; also for auditing your own product's feature claims
-  (claimed vs. visible vs. implemented).
+  Research any product, repository, or approach and produce a traceable report: by default a one-screen
+  decision brief (7 questions) plus a five-act timeline / data-flow; use a runnable instance hands-on when
+  available, or download / clone the repository and research it from source. Answer with both a product
+  lens and a developer lens: "what can it do, how does it do it, and is it worth using / copying /
+  switching / merging?" Use for requests like "research X", "what can this product do", "how is this
+  implemented", "which of these should I choose / can they be merged", or "is this idea worth copying";
+  also for auditing your own product's feature claims (claimed vs. visible vs. implemented).
 ---
 
-> English translation of `SKILL.md`. The Chinese `SKILL.md` is the operative file; method details in `references/`, `assets/`, and the report scripts remain in Chinese.
+> English translation of `SKILL.md`. The Chinese `SKILL.md` is the operative file; method details in `references/`, `assets/`, and the report scripts remain in Chinese. The two files must not differ in rules.
 
 # Product research
 
 ## What this is
 
-Turn a research task into a **traceable evidence chain**, not a feature list: use the product lens to judge "what the user gets", the developer lens to explain "what makes it work and where it breaks", and finish with a conclusion that enables a decision.
+Turn a research task into a report that **enables a decision and can be re-checked**: the first screen is a one-screen decision brief (7 questions), the body runs as a five-act runtime chain, and evidence, self-proof, and references live in three appendices. It is neither a feature list nor an audit worksheet.
 
 ## Shortest usage
 
@@ -26,9 +26,10 @@ Turn a research task into a **traceable evidence chain**, not a feature list: us
 
 Nothing else is required. These are the defaults:
 
-- **Read-only**: do not write, delete, rebuild, or send messages; ask once before any action that spends LLM credits or writes to disk.
-- **Scope**: walk every reachable entry point, not just the main path.
+- **Read-only**: do not write, delete, rebuild, or send messages; ask once before any action that spends LLM credits or writes to disk on the object's side.
+- **Scope**: walk every reachable entry point, not just the main path; click what can be clicked, trace what cannot to its source registration point. Exercise a runnable instance when available; when there is none, download / clone the repository and research it from source plus docs — this is a first-class mode, not a downgrade.
 - **Output**: `<workspace>/.research/<slug>/<YYYY-MM-DD>-v<N>.html`, a single self-contained file with screenshots inlined; override with `--out`.
+- **Reader mode**: `evaluator` (default); use `operator` to install / run, `maintainer` to modify / integrate.
 
 ## When to use
 
@@ -40,18 +41,20 @@ Nothing else is required. These are the defaults:
 
 Not for: reverse engineering (a different discipline), pure code review, pure competitor intelligence collection.
 
-## Three non-negotiables
+## Five non-negotiables
 
 1. **Read-only by default.** Do not change the state of the object under research; never perform irreversible actions (delete / publish / charge / change shared config).
 2. **Do not invent rules.** Checks that the user has not confirmed and that do not appear in this round's evidence can only be candidates; do not put them into conclusions.
 3. **Traceability.** Every conclusion must point back to an operation, a screenshot, a line of code, or a document; if it cannot, mark it "unverified".
+4. **Understand before believing.** The first screen must answer 7 questions: what it is / who it is for / how to use it / what it costs / what was not done this time / whether to try it / what to do next. Explain a term the first time it appears. Before delivery, an independent reader performs a three-stage acceptance (first screen 7 questions / five-act mainline recap / 3 facts from evidence). If any answer fails, fix the report first.
+5. **Write along the runtime chain.** Organise the body as `S0 → S1 → … → Sn`; each hop states input state, executor, processing, output state, failure/degradation, and evidence. A static asset must answer the four questions or stay out of the body.
 
 ## Dual lens (core)
 
 Every finding must pass through two lenses; see `references/dual-lens.md` for the full method:
 
-- **Product lens**: who uses it, in what scenario, what they see, what they get, what it costs them
-- **Developer lens**: what mechanism makes it work, what the data structures are, where the boundaries are, how it breaks, how expensive it is to maintain
+- **Product lens**: who uses it, in what scenario, what they see, what they get, what it costs them.
+- **Developer lens**: what mechanism makes it work, what the data structures are, where the boundaries are, how it breaks, how expensive it is to maintain.
 
 Alignment rules:
 
@@ -59,6 +62,7 @@ Alignment rules:
 - Development problems must be translated into product consequences (e.g., 600 lines with no build → the delete button returns 409 on click); if you cannot translate it, downweight it.
 - Product promises must have a code landing point (e.g., the UI has a filter → which function implements it); if there is none, write "no implementation".
 - Presentation order is always **product first, code second**: code is evidence, not the outline.
+- **When there is no UI**, "visible" means the promise confirmed by README / docs / code entry points. If a UX detail cannot be answered, mark it "not run on a real instance"; do not use source code to pretend there is a UI.
 
 ## Three-column check
 
@@ -68,7 +72,7 @@ Fill three columns for each core capability; **the difference is the value of th
 |---|---|---|
 | What README / marketing says | What is actually in the UI | What the code actually does |
 
-When the three disagree, the evidence order is: trust the UI first (it is the user's truth), then the docs, and finally your own understanding.
+When the three disagree, the evidence order is: trust the UI first (it is the user's truth), then the docs, and finally your own understanding. Without a UI, trust what the source code can confirm about entry points and behaviour first, then the docs.
 
 ## SOP: A → B → C → D → E
 
@@ -76,13 +80,16 @@ Deepen level by level; **each level can be delivered independently**, and stop w
 
 | Level | Answers | Main evidence |
 |---|---|---|
-| **A Product capability** | What can it do, is it usable | Walk every entry point + screenshots + five checklists |
+| **A Product capability** | What can it do, is it usable | Walk every reachable entry point + screenshots + five checklists |
 | **B Technical mechanism** | How does it work, where are the boundaries, where does it break | Source-code path + minimal reproduction |
 | **C Compare / choose / merge** | Which to choose, can they be merged | A+B for each + one shared yardstick + coexistence conflicts |
 | **D Absorb an external approach** | Is it worth copying | Locate the seat first, then criticize, then run a small experiment |
 | **E Failure / abandonment postmortem** | Why is it broken, can it be saved | Timeline + issue / PR archaeology + version drift |
 
-When entering a new level, first write **a short proposal** (what to do / what evidence to collect / what to produce), then continue without waiting for confirmation; work continuously within a level without interruption.
+- **Level A covers every reachable entry point**, with no upper limit; pick 3–5 main paths for deeper work.
+- **Level A comes first**: deliver the one-screen brief (7 questions) before the full evidence.
+- **Source-code Level A**: README / CLI help / routes / exports / command registration points are the entry points; trace each to `path:line`, and write capability as "source-visible, not run on a real instance".
+- When entering a new level, first write **a short proposal** (what to do / what evidence to collect / what to produce), then continue without waiting for confirmation; work continuously within a level without interruption.
 
 ## Evidence
 
@@ -91,13 +98,14 @@ Four layers of evidence, top first; see `references/evidence-rules.md`:
 1. Hands-on operation (what was clicked, what happened)
 2. Screenshots (a screen that can be re-checked)
 3. What the UI itself says (copy / empty states / errors / busy states)
-4. Source code (descend only when 1–3 cannot answer; used to answer "why / boundaries / where it breaks")
+4. Source code (used to answer "why / boundaries / where it breaks")
 
 Hard rules:
 
-- A runnable instance must be exercised for real; if it cannot run, mark all capabilities as "claimed" and declare the downgrade on the first page.
+- A runnable instance must be exercised for real; when there is no instance, source / docs are first-class evidence and are not written as a "downgrade".
+- **Source-only** reports tag `[源码]`, and the first screen's "not done this time" says "not run on a real instance"; do not infer UX from source.
 - Security / boundary conclusions must be tested for real, or marked "not tested".
-- The unverified section must exist and must not be empty.
+- Act 5 "unverified and pending decisions" must exist and must not be empty.
 
 ## Access surfaces (decide how to reach it first)
 
@@ -109,18 +117,23 @@ Form determines the driver; the driver determines evidence strength:
 | Desktop app | computer-use | Screenshots (weak semantics; rely on looking) |
 | CLI / TUI | Terminal | Commands + output text |
 | API / SDK | curl / scripts | Request-response |
+| Hybrid (Electron / Tauri) | Browser or computer-use | By the chosen driver; the two evidence sets cannot be mixed |
+| Vendor-only ecosystem | That ecosystem itself | Screenshots or logs; never fake UI evidence |
+| **Source / docs (not runnable)** | File reads / git / static analysis | `path:line` + claims + data flow |
 
-Rule: **probe before promising** (list pages / list windows / `--help` / status code); on failure, downgrade. Tag every hands-on conclusion with its driver `[browser] [screen] [terminal] [API]`; **evidence from different drivers cannot substitute for each other**. See `references/access-surfaces.md`.
+Rules: **probe before promising** (list pages / list windows / `--help` / status code / read the README and at least one entry definition); on failure, **switch** to a workable access surface. Tag every hands-on conclusion with its driver `[browser] [screen] [terminal] [API] [source] [docs]`; **evidence from different drivers cannot substitute for each other**; source cannot prove reachability / UX. Handle hybrid and vendor-only products as described in `references/access-surfaces.md`.
 
 ## Starting gate (ask only once for the whole research)
 
 Step 0 does not count as a question: **first check whether this object has been researched before.** Read `<workspace>/.research/<slug>/index.json` (or let `scripts/new_report.mjs` decide automatically): the first time generates v1, the second time and later generate v2/v3, and **old reports are never overwritten**; a re-research must include a "changes in this version" block.
 
-Then write a five-line brief in the reply (decision sentence / object / evidence sources / permission / output), and then:
+Then write a **six-line brief** in the reply (decision sentence / object / evidence sources / permission / reader mode / output), and then:
 
 - **Ask only in three cases**: ① the decision sentence cannot be derived; ② it would spend LLM credits or write to disk — **on the object's side**; writing your own report does not count; ③ the output location or form is ambiguous.
 - In all other cases, start immediately after the brief without waiting for confirmation.
 - When entering a new SOP level (C / D / E), write only a short proposal; do not block.
+
+Reader mode has exactly three values: `evaluator` / `operator` / `maintainer`; default `evaluator`. **Source research is the default** when there is no runnable instance: download / clone the repository, research from source plus docs, and do not write it as a "downgrade".
 
 Template: `assets/research-brief.md`. Operation permission: `assets/permission-ladder.md`: default L0 browsing + L1 harmless interaction; L2 requires per-action authorization; L3 never execute. **L1 can also write to disk** (cache, index, logs); check at wrap-up.
 
@@ -139,10 +152,11 @@ Generate it with the scaffold; do not hand-copy styles:
 node scripts/new_report.mjs --slug <kebab-case> --title "<name>" \
   --repo <owner/repo> --version <vX> --commit <sha> \
   --commit-date <YYYY-MM-DD> --local "<path>" \
-  --level <A|B|C|D|E> --modes "<mode1,mode2>" --root <workspace>
+  --level <A|B|C|D|E> --modes "<mode1,mode2>" \
+  --reader evaluator|operator|maintainer --root <workspace>
 ```
 
-It handles: naming and version-number decision, inline structural baseline, six-line metadata table, nine-section skeleton, empty `report-meta` shell, and `index.json` registration. After that, fill in content only.
+It handles: naming and version-number decision, inline structural baseline, six-row metadata table, **decision brief + five-act skeleton + three evidence appendices**, empty `report-meta` shell, and `index.json` registration. After that, fill in content only.
 
 Four hard rules (details in `assets/report-kernel.md`):
 
@@ -151,31 +165,35 @@ Four hard rules (details in `assets/report-kernel.md`):
 3. **Metadata**: a fixed six-row label table (object / version commit / report version / clone / method / date); do not compress it into a `·` string.
 4. **Machine-readable**: `<script id="report-meta">` with a fixed schema + `index.json` cross-version registry; the report is readable by both humans and agents.
 
-The body is **a leading conclusion card + fixed nine sections + appendix** (template in `assets/report-kernel.md`):
+Body structure (template in `assets/report-kernel.md`):
 
-`Conclusion card (unnumbered)` · 1 Product profile · 2 Scope / boundaries / self-proof · 3 Claimed / visible / implemented · 4 Feature map · 5 Main journeys · 6 Feature confirmation · 7 Mechanism / boundaries / failure · 8 Unverified areas · 9 Decisions pending · Appendix
+`Decision brief (7 lines + 3 KPIs)` · `01 Entry` · `02 After install` · `03 Core flow (input / process / output)` · `04 Carriers` · `05 Cross-cuts` · `Appendix evidence` · `Appendix self-proof` · `Appendix references`
 
-Section 1 "Product profile" has five subsections: **positioning → goals → current state → problems → solution** (features are not written here). Section 6 is the core: **one feature per block**, with a fixed three-part structure:
+**The five acts are a state chain, not five parallel chapters.** Features hang under state nodes; each feature is explained fully in one main location, and other locations use `#fn-N` anchors. Summary of each act:
 
-```
-Product intent (what the user gets, what they would assume)
-Code confirmation (path:line + mechanism + boundaries; silent failure or error)
-Verdict (true / discounted / surface only)
-```
+- **1 Entry**: how to run it the first time; host/platform, prerequisites, install/access, first command, first visible result, blocker.
+- **2 After install**: what the environment gained; new assets, activated capabilities, good impact, cost/bad impact, unchanged things, rollback.
+- **3 Core flow**: input reaches its minimum unit; state table ≥3 rows; output is verifiable; feature profiles ≥6.
+- **4 Carriers**: owner, state store, read/write, interrupt/recover, cleanup for each stage.
+- **5 Cross-cuts**: impact matrix with four rows (human / host / object / artifact) + unverified and pending decisions.
 
-**Design intent comes first; code confirms whether it is real.** The feature table in section 4 is only an index (`→ fn-3`) and carries no conclusions; a block longer than 4 paragraphs means two features were mixed — split it.
+**Static asset rule**: a `SKILL.md`, config, manifest, hook script, template, or prompt enters the body only if it answers "who reads it / which state it changes / what differs without it / where the evidence is". If it cannot, it is one line in the asset list; put it in the evidence appendix or delete it.
 
-Depth floor: feature blocks ≥ 6; source references ≥ 15 covering ≥ 6 files; every row in section 3 carries a code reference; and at least one consistency check across sources (the same fact stated differently in two places is the hardest finding).
+Depth floor: feature profiles ≥6; source references ≥15 across ≥6 files (single-file products may set `research.singleFile: true`); every row of the claimed/visible/implemented table carries a code reference or "no implementation"; at least one consistency check across sources; state table ≥3 rows.
 
-Three things are required, not suggested:
+All four must-haves + the version delta **go in the evidence appendices**; the first screen keeps only one sentence:
 
-- **Requirements regression**: tick off the user's original words one by one (`assets/requirements.md`); put it in section 2.
-- **Self-rebuttal**: at least 3 "first thought → correction → evidence" items; put them at the end of section 6.
-- **Non-change self-proof**: operation interval, number of write operations, mtimes of changed files; put it in section 2.
+- **Requirements regression** (`appendix-selfproof`): tick off the user's original words one by one; status only ✅ / ⏳ / ❌.
+- **Three-stage reader acceptance** (`appendix-selfproof`): first screen 7 questions / five-act mainline recap / 3 facts from evidence; `[读者验收]` must be in the body, not only in an HTML comment.
+- **Self-rebuttal** (`appendix-evidence`): at least 3 "first thought → correction → evidence" items.
+- **Non-change self-proof** (`appendix-selfproof`): operation interval, number of write operations, mtimes of changed files, key counts before and after.
+- **Changes in this version** (`appendix-selfproof`): the delta block for v≥2; the first research writes "first research, no previous version".
 
 Re-research (v≥2): re-check every feature block from the previous version one by one, writing "still holds / changed / not re-checked", and fill them into `report-meta.research.recheck` and the "changes in this version" block. **"Conclusion not overturned" must be based on re-verification**; the previous version's hardest defect must not quietly disappear.
 
-Before delivery run `node scripts/check_doc.mjs <file>` and make it all green.
+**Checker**: `node scripts/check_doc.mjs <file>`. v3 checks the five acts, a3 subsections, state table, carrier table, evidence appendices, and `[读者验收]`; v2 keeps nine sections + readability checks; legacy (no `contractVersion`) gets the nine-section structure check only. A v2 report that predates the v3-only `reader` / `brief` fields only gets a warning, so old reports are not falsely rejected. Before delivery it must be all green (an empty scaffold may show the expected "structure passes, content pending" failures).
+
+**Ledger note**: C-007 (plain language first) / C-018 (product profile first) were promoted to delivery gates by C-024; C-025 makes source research a first-class mode.
 
 ## Wrap-up (ask once after delivery)
 
@@ -204,14 +222,14 @@ Give the list (path / size / what it is) before deleting; after deleting, re-che
 ## Resources
 
 - `references/dual-lens.md` — dual lens and three-column check (required reading)
-- `references/access-surfaces.md` — access surfaces: form → driver → evidence → downgrade
+- `references/access-surfaces.md` — seven access surfaces: form → driver → evidence → switch
 - `references/sop-abcde.md` — evidence actions and stop conditions for the five-level SOP
-- `references/evidence-rules.md` — evidence levels, citation format, common traps
-- `assets/research-brief.md` — five-line starting brief (asked only once)
+- `references/evidence-rules.md` — evidence levels, source as first-class, citation format, common traps
+- `assets/research-brief.md` — six-line starting brief (asked only once)
 - `assets/correction-ledger.md` — correction ledger (with seed cases)
 - `assets/permission-ladder.md` — operation permission levels
-- `assets/report-kernel.md` — visual baseline / page metadata / changes and re-check / leading card + nine sections / feature confirmation block / image discipline
-- `assets/report-theme.css` — structural baseline (layout fixed; color variables reset per object)
-- `assets/requirements.md` — original words → acceptance checklist
-- `scripts/new_report.mjs` — create a report: decide version, inline styles, generate skeleton, register in index.json
-- `scripts/check_doc.mjs` — HTML contract validation (naming / metadata / nine sections / theme / images)
+- `assets/report-kernel.md` — v7 SSOT: decision brief / five acts / state chain / static-asset four questions / depth floor / three-stage acceptance / 20 quality lines
+- `assets/report-theme.css` — structural baseline (layout fixed; variables reset per object)
+- `assets/requirements.md` — original words → acceptance checklist + three-stage reader acceptance
+- `scripts/new_report.mjs` — create a report: decide version, inline styles, generate brief + five acts + three appendices, register in index.json
+- `scripts/check_doc.mjs` — HTML contract validation (v3 five acts / v2 nine sections / legacy structure)
