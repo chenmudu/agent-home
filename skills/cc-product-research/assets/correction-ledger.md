@@ -261,6 +261,15 @@
 适用范围：所有产出物
 状态：已升级 → `SKILL.md`「交付」+ `assets/report-kernel.md` §8/§9/§10 + `scripts/new_report.mjs`（五幕骨架）+ `scripts/check_doc.mjs`（五幕/状态链校验）
 
+## C-028｜编排按访问面分诊，不按幕号切
+日期：2026-11-07
+场景：skill 编排设计评审
+我做的：把 W1–W4 按幕/功能切分，默认所有证据都能读源码；没有区分可运行产品、源码、只有文档和访问面不确定。
+纠正的：用户指出有些是源码、有些只是产品、有些不确定；按幕号平均发会把运行时状态链并行拆坏，也会让 worker 带着不确定去猜。
+提炼规则：先分诊再派发；S 源码 / R 运行时 / D 文档 / U 不确定，U 先探针；同一状态链串行，不同对象/独立访问面才并行；worker 只回证据，主 agent 100% 复核；reader 独立。
+适用范围：所有级别
+状态：已升级 → `SKILL.md`「编排」+ `references/orchestration.md` + `references/access-surfaces.md` + `references/evidence-rules.md` + `assets/permission-ladder.md` + `assets/research-brief.md`
+
 ---
 
 ## 维护

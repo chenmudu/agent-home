@@ -114,6 +114,18 @@ description: 调研任意产品、仓库或方案并产出可追溯报告：默�
 
 规则：**先探针再承诺**（列出页面 / 列出窗口 / `--help` / 状态码 / 读到 README 与至少一个入口定义），失败就**改用**可行访问面；每条实机结论标驱动 `[浏览器] [屏幕] [终端] [API] [源码] [文档]`；**不同驱动的证据不能互相顶替**；源码不能证明可达性/UX。混合与只用自家生态的产品按 `references/access-surfaces.md` 处理。
 
+## 编排（先分诊，再派发）
+
+默认单主 agent。出现以下任一情况时切换为主控 + worker：多对象、≥2 个独立访问面、第 3 幕 ≥3 个互不依赖的功能簇；简单调研不拆。
+
+1. **分诊先于派发。** 每个对象/证据单元先探针，归入 S 源码 / R 运行时 / D 文档；不确定先做 5–10 分钟探针，失败就标未验证或改用可行访问面。
+2. **按通道并行，不按幕号并行。** S 可并行；D 可并行；R 同一状态链必须串行。不同对象/独立访问面才并行。
+3. **worker 只取证。** 一包一问，只读；只回结论一句 + `路径:行号`/截图 + 未验证；不写报告，不给最终建议。
+4. **主 agent 对账。** 关键结论 100% 复核源码；冲突回查；不同驱动的证据标签分开。
+5. **reader 独立。** 报告写完才启动；只拿简报、1–5 幕、一个功能档案 + 证据附录，不拿源码/对话。
+
+详见 `references/orchestration.md`。
+
 ## 开工闸门（整个调研只问一次）
 
 第 0 步不算提问：**先看这个对象查过没有。** 读 `<workspace>/.research/<slug>/index.json`（或用 `scripts/new_report.mjs` 自动判定）——第一次生成 v1，第二次起生成 v2/v3，**永不覆盖旧报告**；再调研必须带「本版变化」块。
@@ -214,6 +226,7 @@ node scripts/new_report.mjs --slug <kebab-case> --title "<name>" \
 
 - `references/dual-lens.md` —— 双镜头与三列核对（必读）
 - `references/access-surfaces.md` —— 七种访问面：形态 → 驱动 → 证据 → 改用
+- `references/orchestration.md` —— 编排：分诊、S/R/D 通道、worker packet、对账与反模式
 - `references/sop-abcde.md` —— 五级 SOP 的取证动作与停止条件
 - `references/evidence-rules.md` —— 证据等级、源码一等、引用格式、常见陷阱
 - `assets/research-brief.md` —— 开工六行简报（整场只问一次）

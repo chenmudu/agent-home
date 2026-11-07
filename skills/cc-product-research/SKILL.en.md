@@ -123,6 +123,18 @@ Form determines the driver; the driver determines evidence strength:
 
 Rules: **probe before promising** (list pages / list windows / `--help` / status code / read the README and at least one entry definition); on failure, **switch** to a workable access surface. Tag every hands-on conclusion with its driver `[browser] [screen] [terminal] [API] [source] [docs]`; **evidence from different drivers cannot substitute for each other**; source cannot prove reachability / UX. Handle hybrid and vendor-only products as described in `references/access-surfaces.md`.
 
+## Orchestration (triage first, dispatch second)
+
+Default to one main agent. Switch to an orchestrator plus workers when any of these holds: multiple objects, at least two independent access surfaces, or at least three independent feature clusters in Act 3. Do not split simple research.
+
+1. **Triage before dispatch.** Probe every object/evidence unit and route it to S source / R runtime / D docs. For an uncertain unit, run a 5–10 minute probe first; if that fails, mark it unverified or switch to a workable surface.
+2. **Parallelize by channel, not by act number.** S and D can run in parallel; R must stay serial within one state chain. Parallelize only across objects or independent access surfaces.
+3. **Workers gather evidence only.** One packet, one question, read-only. Return one conclusion plus `path:line` / screenshot / unverified; never write the report or give a final recommendation.
+4. **The main agent reconciles.** Verify every key conclusion against source or a rerun; recheck conflicts; keep evidence labels from different drivers separate.
+5. **The reader stays independent.** Start it after the report is written; give it the brief, Acts 1–5, one feature profile, and the evidence appendices only; no source code, no conversation history.
+
+See `references/orchestration.md`.
+
 ## Starting gate (ask only once for the whole research)
 
 Step 0 does not count as a question: **first check whether this object has been researched before.** Read `<workspace>/.research/<slug>/index.json` (or let `scripts/new_report.mjs` decide automatically): the first time generates v1, the second time and later generate v2/v3, and **old reports are never overwritten**; a re-research must include a "changes in this version" block.
@@ -223,6 +235,7 @@ Give the list (path / size / what it is) before deleting; after deleting, re-che
 
 - `references/dual-lens.md` — dual lens and three-column check (required reading)
 - `references/access-surfaces.md` — seven access surfaces: form → driver → evidence → switch
+- `references/orchestration.md` — orchestration: triage, S/R/D lanes, worker packets, reconciliation, anti-patterns
 - `references/sop-abcde.md` — evidence actions and stop conditions for the five-level SOP
 - `references/evidence-rules.md` — evidence levels, source as first-class, citation format, common traps
 - `assets/research-brief.md` — six-line starting brief (asked only once)
