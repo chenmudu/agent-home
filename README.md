@@ -13,6 +13,7 @@ Chinese: [README.zh-CN.md](README.zh-CN.md)
 | --- | --- | --- | --- | --- |
 | `cc-design-taste-frontend` | Builds a page from zero: deals a direction, writes the copy deck, type, palette, imagery, verifies in a real browser | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) / MIT | No working interface yet | Trigger description narrowed to new builds; the "existing page" section now hands off to `cc-unslop`. Both skills fired on the same words, so the pick was random |
 | `cc-product-research` | Product / repo research report | own | Research, comparison, claimed-vs-actual | None | — |
+| `cc-teaching-coach` | Adaptive teaching coach: probes the blocker, builds a learner model, reshapes the explanation from each answer, tracks mastery evidence across sessions, and can run a 0→expert curriculum track | own | Systematic learning, real-mastery checks, 0→expert, or "teach me X" | New |
 | `cc-unslop` | Repairs an existing screen: audits the AI tells, fixes in nine passes | [heydamir/unslop](https://github.com/heydamir/unslop) / CC BY 4.0 | Interface already runs (source, live URL or screenshot) | Narrowed the same way, plus a "modified locally" note and a boundary paragraph (CC BY asks for changes to be indicated). Same reason |
 
 Every skill here keeps `SKILL.md` in Chinese — that is the file a client loads — and the English copy beside it as `SKILL.en.md`.
@@ -34,4 +35,4 @@ The repository is public. Never commit keys, tokens, `.env` files, or `*.local.j
 - English: this file (default)
 - Chinese: [README.zh-CN.md](README.zh-CN.md)
 - Instructions: [AGENTS.md](AGENTS.md) / [AGENTS.en.md](AGENTS.en.md)
-- Skill entry: [SKILL.md](skills/cc-product-research/SKILL.md) / [SKILL.en.md](skills/cc-product-research/SKILL.en.md)
+- Skill entries: [cc-design-taste-frontend](skills/cc-design-taste-frontend/SKILL.md) / [EN](skills/cc-design-taste-frontend/SKILL.en.md); [cc-product-research](skills/cc-product-research/SKILL.md) / [EN](skills/cc-product-research/SKILL.en.md); [cc-teaching-coach](skills/cc-teaching-coach/SKILL.md) / [EN](skills/cc-teaching-coach/SKILL.en.md); [cc-unslop](skills/cc-unslop/SKILL.md) / [EN](skills/cc-unslop/SKILL.en.md)
